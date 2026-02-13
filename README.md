@@ -111,4 +111,6 @@ This is a demonstration repository for agent orchestration concepts.
 
 ## Credits
 
-Based on the ultralight orchestration pattern by Burke Holland.
+Based on the [ultralight orchestration pattern](https://gist.github.com/burkeholland/0e68481f96e94bbb98134fa6efd00436) by [Burke Holland](https://github.com/burkeholland).
+
+For a detailed walkthrough and demonstration, watch the [YouTube video](https://youtu.be/-BhfcPseWFQ?si=VmDWGtHBe1fUcpRY).
