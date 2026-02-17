@@ -42,46 +42,6 @@ Install all agents into VS Code or VS Code Insiders:
 3. Use the Orchestrator agent in the chat panel
 4. Send your prompt and let the orchestrator coordinate the work
 
-Example prompts:
-- "Add dark mode to the application"
-- "Create a user authentication system"
-- "Build a dashboard with data visualization"
-
-## How It Works
-
-### Orchestrator Agent
-The orchestrator is the entry point for all requests. It:
-1. Analyzes the user's request
-2. Calls the Planner agent to create an implementation strategy
-3. Parses the plan into execution phases
-4. Delegates work to Coder and Designer agents
-5. Coordinates parallel execution when possible
-6. Validates and reports final results
-
-### Planner Agent
-The planner creates comprehensive implementation plans by:
-- Researching the codebase thoroughly
-- Verifying documentation for libraries and APIs
-- Identifying edge cases and error states
-- Creating ordered implementation steps
-- Noting open questions and uncertainties
-
-### Coder Agent
-The coder writes production-quality code following mandatory principles:
-- Uses clear, predictable structure
-- Prefers flat, explicit code over abstractions
-- Keeps control flow linear and simple
-- Makes errors explicit and informative
-- Writes regenerable code with minimal coupling
-- Always consults documentation via context7
-
-### Designer Agent
-The designer focuses on:
-- Creating optimal user experiences
-- Designing accessible interfaces
-- Ensuring visual aesthetics
-- Prioritizing usability over technical constraints
-
 ## Key Features
 
 - **Parallel Execution**: Tasks that don't conflict can run simultaneously
@@ -97,22 +57,6 @@ All agent definitions are stored in `.github/agents/`:
 - `planner.agent.md` - Planning and research workflow
 - `coder.agent.md` - Coding principles and standards
 - `designer.agent.md` - Design philosophy and approach
-
-## Example Workflow
-
-For a request like "Add dark mode to the app":
-
-1. **Planning Phase**: Orchestrator calls Planner
-   - Planner researches the codebase
-   - Creates detailed implementation steps
-   - Identifies file dependencies
-
-2. **Execution Phases**:
-   - Phase 1: Designer creates color palette and toggle UI (parallel)
-   - Phase 2: Coder implements theme context and toggle component (parallel)
-   - Phase 3: Coder applies theme tokens across components
-
-3. **Completion**: Orchestrator validates and reports results
 
 ## Experiment: Valentine's Space Invaders
 
