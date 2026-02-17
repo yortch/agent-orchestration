@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Love Invaders - A Valentine's themed Space Invaders game where Cupid defends against invading hearts!">
+    <meta name="theme-color" content="#7B2869">
+    <title>💘 Love Invaders - Valentine's Space Shooter</title>
+    <!-- Romantic fonts for Valentine's theme -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@500;600;700&family=Pacifico&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background-decorations">
+        <div class="heart x1"></div>
+        <div class="heart x2"></div>
+        <div class="heart x3"></div>
+        <div class="heart x4"></div>
+        <div class="heart x5"></div>
+    </div>
+
+    <!-- UI Overlay - subtle, fades during gameplay -->
+    <div class="ui-layer" id="titleOverlay">
+        <h1 class="game-title">Love Invaders</h1>
+    </div>
+
+    <!-- Full-viewport game container -->
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+    
+    <!-- Main entry point - loaded as ES6 module -->
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>

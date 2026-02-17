@@ -1,0 +1,267 @@
+:root {
+    --deep-purple: #7B2869;
+    --passion-red: #E63946;
+    --cupid-gold: #FFD700;
+    --soft-pink: #FFD1DC;
+    --love-pink: #FF4D6D;
+    --hot-pink: #FF1493;
+    --medium-purple: #9370DB;
+    --light-pink: #FFB6C1;
+    --dark-bg: #2D0036;
+    --darker-bg: #1A001F;
+    
+    --font-heading: 'Pacifico', cursive;
+    --font-script: 'Dancing Script', cursive;
+    --font-fancy: 'Great Vibes', cursive;
+    --font-body: 'Quicksand', sans-serif;
+}
+
+/* Reset margins and padding for full-screen game */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Prevent scrolling and text selection for better game feel */
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background: radial-gradient(ellipse at top, #6B1F59 0%, #4A1940 30%, var(--dark-bg) 60%, var(--darker-bg) 100%);
+    font-family: var(--font-body);
+    color: var(--soft-pink);
+    position: relative;
+}
+
+/* Add animated starfield effect */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 20% 30%, white, transparent),
+        radial-gradient(2px 2px at 60% 70%, white, transparent),
+        radial-gradient(1px 1px at 50% 50%, white, transparent),
+        radial-gradient(1px 1px at 80% 10%, white, transparent),
+        radial-gradient(2px 2px at 90% 60%, white, transparent),
+        radial-gradient(1px 1px at 33% 80%, white, transparent),
+        radial-gradient(1px 1px at 70% 20%, white, transparent);
+    background-size: 200% 200%;
+    background-position: 0% 0%;
+    animation: twinkle 8s ease-in-out infinite;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+/* Decorative Background Elements */
+.background-decorations {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.heart {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: var(--passion-red);
+    opacity: 0.4;
+    transform: rotate(45deg);
+    animation: floatUp 15s linear infinite;
+    top: 100%; /* Start below screen */
+    filter: drop-shadow(0 0 3px rgba(255, 77, 109, 0.6));
+}
+
+/* Heart shape */
+.heart::before,
+.heart::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: inherit; /* inherit color from parent */
+    border-radius: 50%;
+}
+
+.heart::before {
+    top: -10px;
+    left: 0;
+}
+
+.heart::after {
+    left: -10px;
+    top: 0;
+}
+
+/* Different positions and sizes for hearts with varying animations */
+.x1 { 
+    left: 10%; 
+    transform: scale(0.6) rotate(45deg); 
+    animation: floatUp 25s linear infinite, sway 4s ease-in-out infinite; 
+    opacity: 0.3; 
+}
+.x2 { 
+    left: 25%; 
+    transform: scale(1.2) rotate(45deg); 
+    animation: floatUp 18s linear infinite 2s, sway 5s ease-in-out infinite 1s; 
+    opacity: 0.25; 
+}
+.x3 { 
+    left: 50%; 
+    transform: scale(0.8) rotate(45deg); 
+    animation: floatUp 22s linear infinite 5s, sway 6s ease-in-out infinite; 
+    opacity: 0.3; 
+}
+.x4 { 
+    left: 75%; 
+    transform: scale(1.5) rotate(45deg); 
+    animation: floatUp 15s linear infinite 1s, sway 4.5s ease-in-out infinite 2s; 
+    opacity: 0.2; 
+}
+.x5 { 
+    left: 90%; 
+    transform: scale(1.0) rotate(45deg); 
+    animation: floatUp 20s linear infinite 7s, sway 5.5s ease-in-out infinite 3s; 
+    opacity: 0.35; 
+}
+
+@keyframes floatUp {
+    0% {
+        top: 110%;
+    }
+    100% {
+        top: -10%;
+    }
+}
+
+@keyframes sway {
+    0%, 100% {
+        transform: translateX(0) scale(1) rotate(45deg);
+    }
+    25% {
+        transform: translateX(30px) scale(1.1) rotate(48deg);
+    }
+    75% {
+        transform: translateX(-30px) scale(0.9) rotate(42deg);
+    }
+}
+
+/* UI Overlay - Fades during gameplay */
+.ui-layer {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.8s ease-in-out;
+}
+
+/* Hide overlay when game is being played */
+.ui-layer.hidden {
+    opacity: 0;
+    transition: opacity 1.2s ease-out;
+}
+
+.game-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    color: var(--cupid-gold);
+    text-shadow: 
+        0 0 20px rgba(255, 215, 0, 0.8), 
+        0 0 40px rgba(255, 105, 180, 0.6),
+        3px 3px 6px rgba(0,0,0,0.7),
+        0 0 60px rgba(230, 57, 70, 0.4);
+    margin: 0;
+    letter-spacing: 3px;
+    animation: titleGlow 3s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+    0%, 100% {
+        text-shadow: 
+            0 0 20px rgba(255, 215, 0, 0.8), 
+            0 0 40px rgba(255, 105, 180, 0.6),
+            3px 3px 6px rgba(0,0,0,0.7),
+            0 0 60px rgba(230, 57, 70, 0.4);
+    }
+    50% {
+        text-shadow: 
+            0 0 30px rgba(255, 215, 0, 1), 
+            0 0 60px rgba(255, 105, 180, 0.8),
+            3px 3px 6px rgba(0,0,0,0.7),
+            0 0 90px rgba(230, 57, 70, 0.6);
+    }
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    .ui-layer {
+        top: 10px;
+    }
+    
+    .game-title {
+        font-size: clamp(1.8rem, 5vw, 3rem);
+        letter-spacing: 2px;
+    }
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    #gameCanvas {
+        border-width: 3px;
+        border-radius: 10px;
+    }
+}
+
+@media (max-height: 600px) {
+    #gameCanvas {
+        max-height: 85vh;
+    }
+    
+    .ui-layer {
+        top: 5px;
+    }
+}
+
+/* Loading animation styles */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#gameCanvas {
+    animation: fadeIn 0.8s ease-out;
+}
+
+/* Smooth transitions for game states */
+.game-transition {
+    animation: fadeIn 0.5s ease-in-out;
+}
