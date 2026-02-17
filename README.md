@@ -1,6 +1,14 @@
-# Agent Orchestration
+# Agent Orchestration with fast models to implement Space Invaders
 
 A minimal multi-agent system with an orchestrator, a planner, a coder, and a designer working together providing orchestration between Claude, Codex and Gemini.
+
+This project is an **agent orchestration experiment** focused on using **fast models** to keep delegation and execution responsive: **Gemini 3 Flash**, **Claude Opus 4.6 (fast mode)**, and **Claude Haiku 4.5**.
+
+### Why fast models?
+
+- **Lower end-to-end latency** across planner → orchestrator → specialist handoffs.
+- **Higher iteration speed** for multi-step coding and design workflows.
+- **Better cost/performance tradeoff** for frequent subagent calls in orchestration-heavy tasks.
 
 ## Overview
 
@@ -10,6 +18,12 @@ This repository demonstrates agent orchestration using custom GitHub Copilot age
 - **Planner** - Creates detailed implementation strategies and technical plans
 - **Coder** - Writes code following mandatory coding principles
 - **Designer** - Handles all UI/UX and design tasks
+
+## Game Screenshot
+
+Gameplay screenshot captured with Playwright MCP:
+
+![Cupid's Invasion gameplay screenshot](assets/images/gameplay-playwright.png)
 
 ## Prerequisites
 
@@ -30,10 +44,21 @@ Install all agents into VS Code or VS Code Insiders:
 
 | Agent | Type | Description | Install Links |
 | ----- | ---- | ----------- | ------------- |
-| **Orchestrator**<br/>(Claude Sonnet 4.5) | Agent | Architect agent that orchestrates work through subagents (Sonnet, Codex, Gemini) | [![VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Forchestrator.agent.md)<br/>[![VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode-insiders%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Forchestrator.agent.md) |
-| **Planner**<br/>(GPT-5.2) | Agent | Creates comprehensive implementation plans by researching the codebase, consulting documentation, and identifying edge cases | [![VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fplanner.agent.md)<br/>[![VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode-insiders%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fplanner.agent.md) |
-| **Coder**<br/>(Claude Opus 4.6) | Agent | Writes code following mandatory coding principles (GPT-5.2-Codex) | [![VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fcoder.agent.md)<br/>[![VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode-insiders%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fcoder.agent.md) |
-| **Designer**<br/>(Gemini 3 Pro) | Agent | Handles all UI/UX and design tasks (Gemini 3 Pro) | [![VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fdesigner.agent.md)<br/>[![VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode-insiders%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fdesigner.agent.md) |
+| **Orchestrator**<br/>(Claude Haiku 4.5 (copilot)) | Agent | Architect agent that orchestrates work through subagents (Sonnet, Codex, Gemini) | [![VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Forchestrator.agent.md)<br/>[![VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode-insiders%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Forchestrator.agent.md) |
+| **Planner**<br/>(GPT-5.3-Codex (copilot)) | Agent | Creates comprehensive implementation plans by researching the codebase, consulting documentation, and identifying edge cases | [![VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fplanner.agent.md)<br/>[![VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode-insiders%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fplanner.agent.md) |
+| **Coder**<br/>(Claude Opus 4.6 (fast mode) (Preview) (copilot)) | Agent | Writes code following mandatory coding principles | [![VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fcoder.agent.md)<br/>[![VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode-insiders%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fcoder.agent.md) |
+| **Designer**<br/>(Gemini 3 Flash (Preview) (copilot)) | Agent | Handles all UI/UX and design tasks | [![VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fdesigner.agent.md)<br/>[![VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode-insiders%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fdesigner.agent.md) |
+
+## Agent Models (from definitions)
+
+The following model values come directly from each custom agent definition file in `.github/agents/`:
+
+| Agent | Model | Definition File |
+| ----- | ----- | --------------- |
+| Orchestrator | Claude Haiku 4.5 (copilot) | `.github/agents/orchestrator.agent.md` |
+| Planner | GPT-5.3-Codex (copilot) | `.github/agents/planner.agent.md` |
+| Coder | Claude Opus 4.6 (fast mode) (Preview) (copilot) | `.github/agents/coder.agent.md` |
+| Designer | Gemini 3 Flash (Preview) (copilot) | `.github/agents/designer.agent.md` |
 
 ## Usage
 
