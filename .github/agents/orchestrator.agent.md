@@ -1,7 +1,7 @@
 ---
 name: Orchestrator
 description: Sonnet, Codex, Gemini
-model: Claude Sonnet 4.5 (copilot)
+model: Claude Haiku 4.5 (copilot)
 tools: ['read/readFile', 'agent', 'memory']
 ---
 
