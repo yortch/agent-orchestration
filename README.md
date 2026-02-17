@@ -1,129 +1,105 @@
-# Agent Orchestration
+# Valentine's Space Invaders
 
-A minimal multi-agent system with an orchestrator, a planner, a coder, and a designer working together providing orchestration between Claude, Codex and Gemini.
+## Quick Start (Read This First)
 
-## Overview
+This game uses JavaScript ES modules, and modern browsers enforce CORS/security rules for module imports.
 
-This repository demonstrates agent orchestration using custom GitHub Copilot agents. The system consists of four specialized agents that work together to handle complex software development tasks:
+You need to run a local web server from the project folder, then open a localhost URL.
 
-- **Orchestrator** - The main coordinator that breaks down requests and delegates to specialist agents
-- **Planner** - Creates detailed implementation strategies and technical plans
-- **Coder** - Writes code following mandatory coding principles
-- **Designer** - Handles all UI/UX and design tasks
+## Screenshot
 
-## Prerequisites
+![Valentine Space Invaders Game](screenshots/game-start-screen.png)
 
-Before using the agent orchestration system, ensure you have the following installed:
+A polished, browser-based reimagining of classic Space Invaders with a Valentine's Day theme. The game blends arcade mechanics with a playful romantic aesthetic, featuring procedural Canvas graphics, wave-based difficulty scaling, and lightweight procedural sound design.
 
-- **VS Code 109.2 or later** - This system was tested using VS Code 109.2
-- **VS Code Insiders 110 or later** - Currently required for the memory tool functionality
-- **Context7 MCP** - Provides agents access to up-to-date documentation
-  1. Open Extensions tab (Ctrl + Shift + X)
-  2. Search for `@mcp context7`
-  3. Click Install
-  4. The custom agent files reference the Context7 MCP server as `context7/*` in their tool definitions. If named differently, locate your `mcp.json` file and rename the server from `io.github.upstash/context7` to `context7`. Alternatively, you can update the `tools` array in each `.agent.md` file to reference the full server name
-- **GitHub MCP Server** - Enables GitHub integration for the agents
+## Built with AI Agent Orchestration
 
-## Installation
+This game was created using a multi-agent orchestration system with specialized AI agents:
 
-Install all agents into VS Code or VS Code Insiders:
+| Agent | Model | Role |
+|-------|-------|------|
+| **Orchestrator** | Claude Sonnet 4.5 | Coordinates the project, breaks down tasks, delegates to specialist agents |
+| **Planner** | GPT-5.2 | Creates comprehensive implementation plans, researches patterns, identifies edge cases |
+| **Coder** | GPT-5.3-Codex | Implements all code following best practices and coding principles |
+| **Designer** | Gemini 3 Pro (Preview) | Handles UI/UX design, visual specifications, and aesthetic decisions |
 
-| Agent | Type | Description | Install Links |
-| ----- | ---- | ----------- | ------------- |
-| **Orchestrator**<br/>(Claude Sonnet 4.5) | Agent | Architect agent that orchestrates work through subagents (Sonnet, Codex, Gemini) | [![VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Forchestrator.agent.md)<br/>[![VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode-insiders%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Forchestrator.agent.md) |
-| **Planner**<br/>(GPT-5.2) | Agent | Creates comprehensive implementation plans by researching the codebase, consulting documentation, and identifying edge cases | [![VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fplanner.agent.md)<br/>[![VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode-insiders%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fplanner.agent.md) |
-| **Coder**<br/>(Claude Opus 4.6) | Agent | Writes code following mandatory coding principles (GPT-5.2-Codex) | [![VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fcoder.agent.md)<br/>[![VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode-insiders%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fcoder.agent.md) |
-| **Designer**<br/>(Gemini 3 Pro) | Agent | Handles all UI/UX and design tasks (Gemini 3 Pro) | [![VS Code](https://img.shields.io/badge/VS_Code-Install-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fdesigner.agent.md)<br/>[![VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://aka.ms/awesome-copilot/install/agent?url=vscode-insiders%3Achat-agent%2Finstall%3Furl%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2Fyortch%2Fagent-orchestration%2Fmain%2F.github%2Fagents%2Fdesigner.agent.md) |
+Each agent has specific expertise and tools, working together to deliver a complete, polished game from a single prompt.
 
-## Usage
+## Features
 
-1. Install the agents using the links above
-2. Open VS Code or VS Code Insiders
-3. Use the Orchestrator agent in the chat panel
-4. Send your prompt and let the orchestrator coordinate the work
+- **Valentine's theme:** Heart-inspired visuals, romantic color palette, and playful enemy styling.
+- **Classic arcade mechanics:** Move, shoot, dodge enemy fire, and survive as waves escalate.
+- **Procedural graphics:** All game entities and effects are drawn in code (no sprite sheet dependency).
+- **Web Audio-powered SFX:** Real-time synthesized sound effects for shooting, hits, wave clear, and game over.
 
-Example prompts:
-- "Add dark mode to the application"
-- "Create a user authentication system"
-- "Build a dashboard with data visualization"
+## How to Run
 
-## How It Works
+Because the project uses ES module imports, serve it with a static file server (do not open `index.html` directly from disk).
 
-### Orchestrator Agent
-The orchestrator is the entry point for all requests. It:
-1. Analyzes the user's request
-2. Calls the Planner agent to create an implementation strategy
-3. Parses the plan into execution phases
-4. Delegates work to Coder and Designer agents
-5. Coordinates parallel execution when possible
-6. Validates and reports final results
+### Option 1: VS Code Live Server
 
-### Planner Agent
-The planner creates comprehensive implementation plans by:
-- Researching the codebase thoroughly
-- Verifying documentation for libraries and APIs
-- Identifying edge cases and error states
-- Creating ordered implementation steps
-- Noting open questions and uncertainties
+1. Install the **Live Server** extension in VS Code.
+2. Right-click `index.html`.
+3. Select **Open with Live Server**.
 
-### Coder Agent
-The coder writes production-quality code following mandatory principles:
-- Uses clear, predictable structure
-- Prefers flat, explicit code over abstractions
-- Keeps control flow linear and simple
-- Makes errors explicit and informative
-- Writes regenerable code with minimal coupling
-- Always consults documentation via context7
+### Option 2: Node.js
 
-### Designer Agent
-The designer focuses on:
-- Creating optimal user experiences
-- Designing accessible interfaces
-- Ensuring visual aesthetics
-- Prioritizing usability over technical constraints
+From the project root:
 
-## Key Features
+```bash
+npx serve .
+```
 
-- **Parallel Execution**: Tasks that don't conflict can run simultaneously
-- **File Conflict Prevention**: Agents are scoped to specific files to avoid conflicts
-- **Structured Workflow**: Clear phases ensure dependencies are respected
-- **Best Practices**: Each agent follows specialized principles for their domain
-- **Documentation-First**: Agents verify current documentation before implementation
+Then open the URL shown in your terminal.
 
-## Agent Definitions
+```text
+http://localhost:3000
+```
 
-All agent definitions are stored in `.github/agents/`:
-- `orchestrator.agent.md` - Main orchestration logic
-- `planner.agent.md` - Planning and research workflow
-- `coder.agent.md` - Coding principles and standards
-- `designer.agent.md` - Design philosophy and approach
+## Controls
 
-## Example Workflow
+| Action | Key |
+|---|---|
+| Move left / right | **Arrow Keys** or **A / D** |
+| Shoot | **Space** |
+| Mute / Unmute | **M** |
+| Confirm in menus | **Enter** (Space also works on start/restart screens) |
 
-For a request like "Add dark mode to the app":
+> Debug overlay: if you add a local debug toggle, `D` is a sensible default key binding to document.
 
-1. **Planning Phase**: Orchestrator calls Planner
-   - Planner researches the codebase
-   - Creates detailed implementation steps
-   - Identifies file dependencies
+## Game Mechanics
 
-2. **Execution Phases**:
-   - Phase 1: Designer creates color palette and toggle UI (parallel)
-   - Phase 2: Coder implements theme context and toggle component (parallel)
-   - Phase 3: Coder applies theme tokens across components
+- **Progressive waves:** Each cleared formation starts the next wave with faster invader movement and increased enemy fire pressure.
+- **Invader variety:** The formation includes themed enemy variants such as **cupids**, **broken hearts**, and **anti-love badges**.
+- **Score system:** Defeating invaders awards points by row, rewarding harder targets with higher values.
+- **Lives system:** You start with limited lives, gain brief invulnerability after taking a hit, and lose on final life or if invaders reach your line.
 
-3. **Completion**: Orchestrator validates and reports results
+## Architecture Overview
 
-## Contributing
+The project follows a modular ES6 architecture with clear runtime boundaries:
 
-Feel free to customize the agent definitions in `.github/agents/` to match your team's needs and preferences.
+- `src/main.js` initializes canvas, input, audio, world state, renderer, and the game loop.
+- `src/engine/` handles reusable engine concerns (canvas sizing, input mapping, timing loop, asset utilities).
+- `src/game/` contains gameplay logic (state machine, world orchestration, collisions, scoring, lives, enemy behavior, entities).
+- `src/render/` contains Canvas drawing logic for entities and scene rendering.
+- `src/ui/` manages HUD and screen overlays (start/game-over presentation).
+- `src/audio/` provides procedural sound playback via the Web Audio API.
 
-## License
+## Technologies Used
 
-This is a demonstration repository for agent orchestration concepts.
+- **HTML5 Canvas** for rendering
+- **JavaScript (ES6 Modules)** for architecture and game logic
+- **Web Audio API** for procedural sound effects
+- **CSS3** for page-level styling and presentation
 
 ## Credits
 
-Based on the [ultralight orchestration pattern](https://gist.github.com/burkeholland/0e68481f96e94bbb98134fa6efd00436) by [Burke Holland](https://github.com/burkeholland).
+- Gameplay inspiration: the original **Space Invaders** arcade formula.
+- Visual/audio direction informed by the design notes in `docs/theme.md` and `docs/audio.md`.
+- Graphics and SFX are generated procedurally in code for this project.
 
-For a detailed walkthrough and demonstration, watch the [YouTube video](https://youtu.be/-BhfcPseWFQ?si=VmDWGtHBe1fUcpRY).
+## License
+
+No license file is currently included.
+
+If you plan to open source this project, **MIT** is a strong default choice for a portfolio-friendly game repository. Consider adding a `LICENSE` file with the MIT text.

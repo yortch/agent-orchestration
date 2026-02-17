@@ -1,0 +1,7 @@
+{
+  "name": "valentines-space-invaders",
+  "description": "Valentine's-themed Space Invaders browser game",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}
