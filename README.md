@@ -7,6 +7,8 @@ A Valentine's Day themed browser-based arcade shooter inspired by Space Invaders
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow)
 ![License](https://img.shields.io/badge/license-Educational-blue)
 
+![Love Invaders Gameplay](assets/images/game-screenshot.png)
+
 ## 📑 Table of Contents
 
 - [Game Description](#-game-description)
@@ -379,6 +381,17 @@ Feel free to learn from, modify, and extend this code for your own projects!
 
 ### Development
 Built using **multi-agent orchestration** with GitHub Copilot, demonstrating collaborative AI-assisted development workflow.
+
+#### Custom Agents & Models
+
+| Agent | Model | Role |
+|-------|-------|------|
+| **Orchestrator** | Claude Sonnet 4.5 | Breaks down requests into tasks and delegates to specialist agents |
+| **Planner** | GPT-5.2 | Creates implementation plans by researching codebase and documentation |
+| **Coder** | Claude Opus 4.6 | Writes code following mandatory coding principles |
+| **Designer** | Gemini 3 Pro (Preview) | Handles all UI/UX design tasks |
+
+Agent definitions are located in [`.github/agents/`](.github/agents/).
 
 **See [CREDITS.md](docs/CREDITS.md) for complete acknowledgments and detailed technology information.**
 
