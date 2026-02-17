@@ -11,6 +11,19 @@ This repository demonstrates agent orchestration using custom GitHub Copilot age
 - **Coder** - Writes code following mandatory coding principles
 - **Designer** - Handles all UI/UX and design tasks
 
+## Prerequisites
+
+Before using the agent orchestration system, ensure you have the following installed:
+
+- **VS Code 109.2 or later** - This system was tested using VS Code 109.2
+- **VS Code Insiders 110 or later** - Currently required for the memory tool functionality
+- **Context7 MCP** - Provides agents access to up-to-date documentation
+  1. Open Extensions tab (Ctrl + Shift + X)
+  2. Search for `@mcp context7`
+  3. Click Install
+  4. The custom agent files reference the Context7 MCP server as `context7/*` in their tool definitions. If named differently, locate your `mcp.json` file and rename the server from `io.github.upstash/context7` to `context7`. Alternatively, you can update the `tools` array in each `.agent.md` file to reference the full server name
+- **GitHub MCP Server** - Enables GitHub integration for the agents
+
 ## Installation
 
 Install all agents into VS Code or VS Code Insiders:
