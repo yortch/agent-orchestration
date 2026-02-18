@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valentine Invaders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Space+Grotesk:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --rose: #ff6f9c;
+      --rose-dark: #d43c6e;
+      --berry: #4c1f45;
+      --berry-deep: #2b0f26;
+      --cream: #ffeef6;
+      --mint: #7cf2d4;
+      --gold: #f7b548;
+      --shadow: rgba(12, 1, 13, 0.32);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(140% 120% at 20% 20%, rgba(255, 150, 194, 0.18), transparent),
+        radial-gradient(120% 120% at 80% 0%, rgba(255, 117, 171, 0.24), transparent),
+        linear-gradient(145deg, #140010, #22051b 40%, #1b0722 100%);
+      color: var(--cream);
+      font-family: "Baloo 2", "Space Grotesk", sans-serif;
+      overflow-x: hidden;
+    }
+
+    .shell {
+      max-width: 1200px;
+      margin: 32px auto 48px;
+      padding: 0 16px;
+    }
+
+    header.hud {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      text-align: center;
+    }
+
+    .title {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255, 111, 156, 0.26), rgba(255, 111, 156, 0.08));
+      color: #ffe1ed;
+      font-size: 26px;
+      letter-spacing: 1px;
+      box-shadow: 0 12px 28px rgba(255, 111, 156, 0.18);
+    }
+
+    .title .pulse {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 12px var(--mint), 0 0 24px rgba(124, 242, 212, 0.55);
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.18); opacity: 0.45; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .stat {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(255, 111, 156, 0.2), rgba(46, 8, 41, 0.65));
+      box-shadow: inset 0 0 0 1px rgba(255, 239, 249, 0.06), 0 10px 24px rgba(0, 0, 0, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fcd9ea;
+      font-size: 15px;
+      letter-spacing: 0.3px;
+    }
+
+    .stat span.value {
+      color: #fff3fb;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .control-hint {
+      color: #ffd2e6;
+      font-size: 14px;
+      letter-spacing: 0.4px;
+      background: rgba(255, 111, 156, 0.12);
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 111, 156, 0.2);
+    }
+
+    .canvas-wrap {
+      position: relative;
+      margin-top: 20px;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow:
+        0 32px 60px rgba(0, 0, 0, 0.42),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 14px 34px rgba(255, 111, 156, 0.28);
+      background: radial-gradient(140% 140% at 50% 0%, rgba(255, 111, 156, 0.08), rgba(28, 4, 26, 0.9));
+    }
+
+    canvas {
+      display: block;
+      width: min(100vw - 28px, 1150px);
+      height: auto;
+      max-height: 80vh;
+      background: linear-gradient(180deg, #0c0614, #18031c 60%, #210321);
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(160deg, rgba(0, 0, 0, 0.48), rgba(46, 0, 46, 0.62));
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 240ms ease;
+    }
+
+    .overlay--visible {
+      opacity: 1;
+      pointer-events: auto;
+      backdrop-filter: blur(1.5px);
+    }
+
+    .overlay-card {
+      background: rgba(32, 5, 32, 0.8);
+      border: 1px solid rgba(255, 111, 156, 0.28);
+      border-radius: 18px;
+      padding: 22px 22px 20px;
+      width: min(360px, 92vw);
+      color: #ffe9f4;
+      text-align: center;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), 0 6px 0 rgba(255, 111, 156, 0.14);
+    }
+
+    .overlay-card h2 {
+      margin: 6px 0 8px;
+      font-size: 26px;
+      letter-spacing: 0.6px;
+    }
+
+    .overlay-card p {
+      margin: 0 0 12px;
+      color: #ffd7eb;
+      line-height: 1.5;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #ffb7d5;
+      margin: 0;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #ff7fb3, #ff3f87);
+      border: none;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      box-shadow: 0 12px 22px rgba(255, 111, 156, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.18);
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    button.primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(255, 111, 156, 0.32), 0 0 0 1px rgba(255, 255, 255, 0.22);
+    }
+
+    button.primary:active {
+      transform: translateY(0);
+      box-shadow: 0 10px 18px rgba(255, 111, 156, 0.22);
+    }
+
+    @media (max-width: 640px) {
+      .title { font-size: 22px; }
+      .stats { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+      .control-hint { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="hud">
+      <div class="title">
+        <span class="pulse" aria-hidden="true"></span>
+        <span>Valentine Invaders</span>
+      </div>
+      <div class="stats" role="status" aria-live="polite">
+        <div class="stat">Score <span class="value" id="score">0</span></div>
+        <div class="stat">High Score <span class="value" id="high-score">0</span></div>
+        <div class="stat">Lives <span class="value" id="lives">3</span></div>
+        <div class="stat">Level <span class="value" id="level">1</span></div>
+      </div>
+      <div class="control-hint">Move with A / D or ← → · Shoot with Space · Pause with P</div>
+    </header>
+
+    <section class="canvas-wrap">
+      <canvas id="game" width="900" height="700" role="img" aria-label="Valentine Space Invaders canvas"></canvas>
+      <div id="overlay" class="overlay overlay--visible">
+        <div class="overlay-card">
+          <p class="eyebrow">Season of Hearts</p>
+          <h2 id="overlay-title">Defend the last bouquet</h2>
+          <p id="overlay-text">Hold the line against swarms of candy-colored invaders. Clear each wave, protect your heart shields, and keep the bouquet safe.</p>
+          <button class="primary" id="start-btn" type="button">Start</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="./game.js"></script>
+</body>
+</html>
