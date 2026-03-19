@@ -1,0 +1,21 @@
+{
+  "name": "agent-orchestration",
+  "version": "1.0.0",
+  "description": "A minimal multi-agent system with an orchestrator, a planner, a coder, and a designer working together providing orchestration between Claude, Codex and Gemini.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"No automated tests; open index.html in a browser to play\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yortch/agent-orchestration.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/yortch/agent-orchestration/issues"
+  },
+  "homepage": "https://github.com/yortch/agent-orchestration#readme"
+}
