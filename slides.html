@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Orchestration — Vibe Coding Demo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-card: #1c2128;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --accent-blue: #58a6ff;
+    --accent-purple: #bc8cff;
+    --accent-green: #3fb950;
+    --accent-orange: #d29922;
+    --accent-red: #f85149;
+    --accent-pink: #f778ba;
+    --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    --gradient-hero: linear-gradient(135deg, #0d1117 0%, #1a1040 30%, #0d2137 60%, #0d1117 100%);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ── Slide container ── */
+  .deck {
+    width: 100vw; height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+    overflow-y: auto;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .slide.exit-left {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ── Typography ── */
+  h1 { font-size: 3.2rem; font-weight: 800; line-height: 1.15; margin-bottom: 20px; }
+  h2 { font-size: 2.4rem; font-weight: 700; line-height: 1.2; margin-bottom: 16px; }
+  h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: 12px; }
+  p, li { font-size: 1.25rem; line-height: 1.7; color: var(--text-secondary); }
+  li { margin-bottom: 8px; }
+  ul { list-style: none; padding: 0; }
+  ul li::before { content: "→ "; color: var(--accent-blue); font-weight: 600; }
+
+  .subtitle {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+  }
+
+  .gradient-text {
+    background: var(--gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-2 {
+    background: var(--gradient-2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-3 {
+    background: var(--gradient-3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-4 {
+    background: var(--gradient-4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .small { font-size: 1rem; }
+  .tiny { font-size: 0.85rem; color: var(--text-secondary); }
+  .center { text-align: center; }
+  .wide { max-width: 1100px; width: 100%; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin: 8px;
+    transition: transform 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); }
+
+  .card-grid {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    max-width: 1100px;
+  }
+  .card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .card-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  /* ── Agent badge ── */
+  .badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .badge.claude { background: rgba(188,140,255,0.15); color: var(--accent-purple); }
+  .badge.gpt { background: rgba(88,166,255,0.15); color: var(--accent-blue); }
+  .badge.gemini { background: rgba(63,185,80,0.15); color: var(--accent-green); }
+  .badge.multi { background: rgba(247,120,186,0.15); color: var(--accent-pink); }
+
+  /* ── Code blocks ── */
+  .code-block {
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 20px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    overflow-x: auto;
+    max-width: 1000px;
+    width: 100%;
+    white-space: pre;
+  }
+  .code-block .kw { color: var(--accent-purple); }
+  .code-block .str { color: var(--accent-green); }
+  .code-block .cm { color: #484f58; font-style: italic; }
+  .code-block .fn { color: var(--accent-blue); }
+  .code-block .op { color: var(--accent-orange); }
+
+  /* ── Architecture diagram ── */
+  .arch-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin: 20px 0;
+  }
+
+  .arch-node {
+    padding: 18px 36px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-align: center;
+    color: #fff;
+    min-width: 220px;
+    position: relative;
+  }
+
+  .arch-node.orchestrator {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    font-size: 1.3rem;
+    padding: 22px 48px;
+    box-shadow: 0 0 40px rgba(124,58,237,0.3);
+  }
+
+  .arch-children {
+    display: flex;
+    gap: 24px;
+    position: relative;
+  }
+
+  .arch-connector {
+    width: 2px;
+    height: 28px;
+    background: rgba(255,255,255,0.15);
+    margin: 0 auto;
+  }
+
+  .arch-connector-h {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    position: relative;
+    width: 100%;
+  }
+
+  .arch-connector-h::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: calc(50% - 200px);
+    right: calc(50% - 200px);
+    height: 2px;
+    background: rgba(255,255,255,0.12);
+  }
+
+  .arch-node.planner { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+  .arch-node.coder { background: linear-gradient(135deg, #0891b2, #06b6d4); }
+  .arch-node.designer { background: linear-gradient(135deg, #059669, #10b981); }
+
+  .arch-node .arch-model {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 400;
+    opacity: 0.8;
+    margin-top: 4px;
+  }
+
+  /* ── Flow diagram ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .flow-step {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 16px 24px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem;
+    min-width: 140px;
+  }
+
+  .flow-arrow {
+    font-size: 1.5rem;
+    color: var(--accent-blue);
+  }
+
+  .flow-step .flow-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* ── Comparison table ── */
+  .comp-table {
+    width: 100%;
+    max-width: 1100px;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .comp-table th {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+    font-weight: 600;
+    color: var(--accent-blue);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .comp-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text-secondary);
+  }
+  .comp-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .comp-table .check { color: var(--accent-green); }
+  .comp-table .warn { color: var(--accent-orange); }
+  .comp-table .cross { color: var(--accent-red); }
+
+  /* ── Highlights ── */
+  .highlight-box {
+    border-left: 3px solid var(--accent-blue);
+    background: rgba(88,166,255,0.06);
+    padding: 16px 24px;
+    border-radius: 0 10px 10px 0;
+    margin: 16px 0;
+    max-width: 900px;
+    width: 100%;
+  }
+  .highlight-box.purple { border-left-color: var(--accent-purple); background: rgba(188,140,255,0.06); }
+  .highlight-box.green { border-left-color: var(--accent-green); background: rgba(63,185,80,0.06); }
+  .highlight-box.orange { border-left-color: var(--accent-orange); background: rgba(210,153,34,0.06); }
+  .highlight-box.pink { border-left-color: var(--accent-pink); background: rgba(247,120,186,0.06); }
+
+  /* ── Pill tags ── */
+  .pill-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+  }
+  .pill {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-primary);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  /* ── Parallelization visual ── */
+  .parallel-visual {
+    display: flex;
+    gap: 28px;
+    align-items: stretch;
+    max-width: 1000px;
+    width: 100%;
+    margin: 20px 0;
+  }
+  .phase-col {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 20px;
+    position: relative;
+  }
+  .phase-col h4 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-blue);
+    margin-bottom: 14px;
+  }
+  .task-bar {
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #fff;
+  }
+  .task-bar.t-planner { background: linear-gradient(90deg, #2563eb, #3b82f6); }
+  .task-bar.t-coder { background: linear-gradient(90deg, #0891b2, #06b6d4); }
+  .task-bar.t-designer { background: linear-gradient(90deg, #059669, #10b981); }
+  .task-bar.t-parallel {
+    display: flex;
+    gap: 8px;
+  }
+  .task-bar.t-parallel > span {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #fff;
+  }
+
+  /* ── Progress bar (bottom) ── */
+  .progress-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    z-index: 100;
+  }
+  .progress-bar .fill {
+    height: 100%;
+    background: var(--gradient-1);
+    transition: width 0.4s ease;
+  }
+
+  /* ── Slide counter ── */
+  .slide-counter {
+    position: fixed;
+    bottom: 16px;
+    right: 32px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-family: 'JetBrains Mono', monospace;
+    z-index: 100;
+  }
+
+  /* ── Keyboard hint ── */
+  .nav-hint {
+    position: fixed;
+    bottom: 16px;
+    left: 32px;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.2);
+    z-index: 100;
+  }
+  .nav-hint kbd {
+    background: rgba(255,255,255,0.08);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── Hero particles ── */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-hero);
+    overflow: hidden;
+    z-index: -1;
+  }
+  .hero-bg .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.3;
+    animation: float 8s ease-in-out infinite;
+  }
+  .hero-bg .orb:nth-child(1) {
+    width: 400px; height: 400px;
+    background: #7c3aed;
+    top: -100px; left: -50px;
+    animation-delay: 0s;
+  }
+  .hero-bg .orb:nth-child(2) {
+    width: 350px; height: 350px;
+    background: #2563eb;
+    bottom: -80px; right: -40px;
+    animation-delay: -3s;
+  }
+  .hero-bg .orb:nth-child(3) {
+    width: 250px; height: 250px;
+    background: #10b981;
+    top: 50%; right: 20%;
+    animation-delay: -5s;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+  }
+
+  /* ── Emoji icon ── */
+  .icon-large { font-size: 3rem; margin-bottom: 12px; display: block; }
+
+  /* ── Versus divider ── */
+  .vs-badge {
+    background: var(--bg-card);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 50%;
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: var(--accent-pink);
+    flex-shrink: 0;
+  }
+
+  /* ── Prompt showcase ── */
+  .prompt-box {
+    background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(37,99,235,0.1));
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: 16px;
+    padding: 32px 40px;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    max-width: 900px;
+    text-align: center;
+    line-height: 1.6;
+    position: relative;
+  }
+  .prompt-box::before {
+    content: '"';
+    font-size: 4rem;
+    position: absolute;
+    top: -10px; left: 20px;
+    color: var(--accent-purple);
+    opacity: 0.4;
+    font-family: Georgia, serif;
+  }
+
+  /* ── Logo ── */
+  .gh-logo {
+    width: 48px; height: 48px;
+    margin-bottom: 16px;
+  }
+
+  /* ── Numbered steps ── */
+  .step-list {
+    counter-reset: steps;
+    list-style: none;
+    padding: 0;
+    max-width: 800px;
+    width: 100%;
+  }
+  .step-list li {
+    counter-increment: steps;
+    padding: 14px 0 14px 60px;
+    position: relative;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .step-list li::before {
+    content: counter(steps);
+    position: absolute;
+    left: 0; top: 14px;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--gradient-1);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #fff;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .card-grid.cols-3, .card-grid.cols-4 { grid-template-columns: 1fr 1fr; }
+    h1 { font-size: 2.4rem; }
+    h2 { font-size: 1.8rem; }
+    .slide { padding: 40px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ==================== SLIDE 1: TITLE ==================== -->
+  <div class="slide active" data-slide="0">
+    <div class="hero-bg">
+      <div class="orb"></div>
+      <div class="orb"></div>
+      <div class="orb"></div>
+    </div>
+    <svg class="gh-logo" viewBox="0 0 98 96" fill="#fff"><path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg>
+    <h1>Agent <span class="gradient-text">Orchestration</span></h1>
+    <p class="subtitle">Custom Agents · Sub-Agents · Multi-Model Parallelization</p>
+    <div class="pill-row">
+      <span class="pill" style="border-color: rgba(188,140,255,0.3);">🟣 Claude Sonnet</span>
+      <span class="pill" style="border-color: rgba(88,166,255,0.3);">🔵 GPT-5.x</span>
+      <span class="pill" style="border-color: rgba(63,185,80,0.3);">🟢 Gemini 3 Pro</span>
+    </div>
+    <p class="tiny" style="margin-top: 40px;">GitHub Copilot · Vibe Coding Demo</p>
+  </div>
+
+  <!-- ==================== SLIDE 2: WHAT IS THIS ==================== -->
+  <div class="slide" data-slide="1">
+    <h2>What is <span class="gradient-text">Agent Orchestration</span>?</h2>
+    <p class="subtitle center" style="max-width: 700px;">A system where specialized AI agents collaborate — each with its own model, role, and expertise — coordinated by an orchestrator.</p>
+    <div class="card-grid cols-3" style="margin-top: 20px;">
+      <div class="card center">
+        <span class="icon-large">🎯</span>
+        <h3>Custom Agents</h3>
+        <p class="small">Define agents in simple Markdown files with specific roles, models, and tools</p>
+      </div>
+      <div class="card center">
+        <span class="icon-large">🔀</span>
+        <h3>Sub-Agents</h3>
+        <p class="small">Agents delegate work to other agents — the orchestrator never writes code itself</p>
+      </div>
+      <div class="card center">
+        <span class="icon-large">⚡</span>
+        <h3>Parallelization</h3>
+        <p class="small">Non-conflicting tasks run simultaneously, dramatically reducing build time</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 3: ARCHITECTURE ==================== -->
+  <div class="slide" data-slide="2">
+    <h2>The <span class="gradient-text">Architecture</span></h2>
+    <p class="subtitle">Four specialized agents, three AI providers, one orchestrator</p>
+    <div class="arch-diagram">
+      <div class="arch-node orchestrator">
+        🎭 Orchestrator
+        <span class="arch-model">Claude Sonnet 4.6</span>
+      </div>
+      <div class="arch-connector"></div>
+      <div class="arch-children">
+        <div class="arch-node planner">
+          📋 Planner
+          <span class="arch-model">GPT-5.4</span>
+        </div>
+        <div class="arch-node coder">
+          💻 Coder
+          <span class="arch-model">GPT-5.3-Codex</span>
+        </div>
+        <div class="arch-node designer">
+          🎨 Designer
+          <span class="arch-model">Gemini 3.1 Pro</span>
+        </div>
+      </div>
+    </div>
+    <div class="highlight-box" style="max-width: 650px;">
+      <p class="small" style="color: var(--text-primary);">
+        <strong>Key principle:</strong> The Orchestrator coordinates but <strong>never implements</strong>. It breaks down requests, delegates to specialists, and manages execution phases.
+      </p>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 4: AGENT DEFINITIONS ==================== -->
+  <div class="slide" data-slide="3">
+    <h2>Agent Definitions are just <span class="gradient-text-3">Markdown</span></h2>
+    <p class="subtitle">Stored in <code style="color: var(--accent-blue);">.github/agents/</code> — simple, version-controlled, shareable</p>
+    <div class="code-block" style="font-size: 0.85rem;"><span class="cm"><!-- orchestrator.agent.md --></span>
+<span class="op">---</span>
+<span class="kw">name:</span> <span class="str">Orchestrator</span>
+<span class="kw">description:</span> <span class="str">Sonnet, Codex, Gemini</span>
+<span class="kw">model:</span> <span class="str">Claude Sonnet 4.6 (copilot)</span>
+<span class="kw">tools:</span> [<span class="str">'read/readFile'</span>, <span class="str">'agent'</span>, <span class="str">'memory'</span>]
+<span class="op">---</span>
+
+You are a project orchestrator.
+You break down complex requests into tasks and
+delegate to specialist subagents.
+You coordinate work but <span class="fn">NEVER implement anything yourself</span>.
+</div>
+    <div class="pill-row" style="margin-top: 16px;">
+      <span class="pill">orchestrator.agent.md</span>
+      <span class="pill">planner.agent.md</span>
+      <span class="pill">coder.agent.md</span>
+      <span class="pill">designer.agent.md</span>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 5: EACH AGENT ==================== -->
+  <div class="slide" data-slide="4">
+    <h2>Meet the <span class="gradient-text">Agents</span></h2>
+    <div class="card-grid cols-4" style="margin-top: 16px;">
+      <div class="card">
+        <span class="badge claude">Claude Sonnet 4.6</span>
+        <h3>🎭 Orchestrator</h3>
+        <p class="small">Breaks requests into phases. Detects parallelism. Delegates to specialists. Never writes code.</p>
+        <p class="tiny" style="margin-top:8px;">Tools: readFile, agent, memory</p>
+      </div>
+      <div class="card">
+        <span class="badge gpt">GPT-5.4</span>
+        <h3>📋 Planner</h3>
+        <p class="small">Researches codebase. Checks docs via Context7. Outputs WHAT to build, not HOW. Identifies edge cases.</p>
+        <p class="tiny" style="margin-top:8px;">Tools: vscode, execute, read, context7, web</p>
+      </div>
+      <div class="card">
+        <span class="badge gpt">GPT-5.3-Codex</span>
+        <h3>💻 Coder</h3>
+        <p class="small">Implements code following strict principles. Always checks latest docs. Focuses on regenerability.</p>
+        <p class="tiny" style="margin-top:8px;">Tools: vscode, execute, edit, context7, github</p>
+      </div>
+      <div class="card">
+        <span class="badge gemini">Gemini 3.1 Pro</span>
+        <h3>🎨 Designer</h3>
+        <p class="small">Controls all UI/UX decisions. Prioritizes user experience over technical constraints. Owns the design.</p>
+        <p class="tiny" style="margin-top:8px;">Tools: vscode, execute, edit, context7, web</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 6: MULTI-MODEL DIFFERENTIATOR ==================== -->
+  <div class="slide" data-slide="5">
+    <h2><span class="gradient-text-2">Multi-Model</span>: The GitHub Copilot Edge</h2>
+    <p class="subtitle center" style="max-width: 700px;">Use the best model for each job — not just one model for everything</p>
+    <div class="card-grid cols-2" style="margin-top: 16px; max-width: 900px;">
+      <div class="card">
+        <h3 style="color: var(--accent-pink);">🏆 GitHub Copilot</h3>
+        <ul>
+          <li>Claude (Anthropic) for orchestration</li>
+          <li>GPT-5.x (OpenAI) for planning & coding</li>
+          <li>Gemini (Google) for design</li>
+          <li>Mix and match per agent</li>
+          <li>Each agent uses its optimal model</li>
+        </ul>
+      </div>
+      <div class="card" style="opacity: 0.6;">
+        <h3 style="color: var(--text-secondary);">Other Tools</h3>
+        <ul style="color: rgba(139,148,158,0.7);">
+          <li>Single model provider only</li>
+          <li>Claude Code → Anthropic only</li>
+          <li>Can't mix providers per agent</li>
+          <li>Same model for all tasks</li>
+          <li>No model specialization</li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight-box pink" style="margin-top: 16px; max-width: 700px;">
+      <p class="small" style="color: var(--text-primary);"><strong>This is a unique differentiator</strong> — GitHub Copilot lets you assign different AI providers to different agents, picking the best model for each role.</p>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 7: EXECUTION FLOW ==================== -->
+  <div class="slide" data-slide="6">
+    <h2>How It <span class="gradient-text-3">Works</span></h2>
+    <p class="subtitle">The orchestrator follows a structured 4-step execution model</p>
+    <div class="flow" style="margin: 30px 0;">
+      <div class="flow-step" style="border-top: 3px solid var(--accent-blue);">
+        📋 Get Plan
+        <span class="flow-label">Call Planner agent</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-top: 3px solid var(--accent-purple);">
+        🧩 Parse Phases
+        <span class="flow-label">Detect parallelism</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-top: 3px solid var(--accent-green);">
+        ⚡ Execute
+        <span class="flow-label">Spawn sub-agents</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-top: 3px solid var(--accent-orange);">
+        ✅ Verify
+        <span class="flow-label">Report results</span>
+      </div>
+    </div>
+    <div class="highlight-box green" style="max-width: 800px;">
+      <p class="small" style="color: var(--text-primary);">
+        <strong>Parallelization rules:</strong> Tasks touching <em>different files</em> or <em>different domains</em> run in parallel.
+        Tasks with <em>data dependencies</em> or <em>shared files</em> run sequentially to prevent conflicts.
+      </p>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 8: PARALLELIZATION VISUAL ==================== -->
+  <div class="slide" data-slide="7">
+    <h2>Parallel <span class="gradient-text-4">Execution</span> in Action</h2>
+    <p class="subtitle">Non-conflicting tasks run simultaneously across agents</p>
+    <div class="parallel-visual">
+      <div class="phase-col">
+        <h4>Phase 1 — Plan</h4>
+        <div class="task-bar t-planner">📋 Planner: Create strategy</div>
+        <p class="tiny" style="margin-top:8px;">Sequential — plan needed first</p>
+      </div>
+      <div class="phase-col">
+        <h4>Phase 2 — Build ⚡ Parallel</h4>
+        <div class="task-bar t-coder">💻 Coder: Game engine & logic</div>
+        <div class="task-bar t-designer">🎨 Designer: UI/UX & styling</div>
+        <p class="tiny" style="margin-top:8px;">Different files → run simultaneously</p>
+      </div>
+      <div class="phase-col">
+        <h4>Phase 3 — Integrate</h4>
+        <div class="task-bar t-coder">💻 Coder: Wire everything up</div>
+        <p class="tiny" style="margin-top:8px;">Sequential — depends on Phase 2</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 9: DEMO SETUP ==================== -->
+  <div class="slide" data-slide="8">
+    <h2>Demo <span class="gradient-text">Setup</span></h2>
+    <p class="subtitle">What you need before running the demo</p>
+    <ol class="step-list">
+      <li>
+        <strong>Fork & clone the repo</strong>
+        <p class="small" style="color: var(--text-secondary);">
+          <code style="color: var(--accent-blue);">github.com/yortch/agent-orchestration</code>
+          <br>Or copy agents from Burke Holland's gist
+        </p>
+      </li>
+      <li>
+        <strong>Install Context7 MCP extension</strong>
+        <p class="small" style="color: var(--text-secondary);">Extensions → search <code>@mcp context7</code> → Install</p>
+      </li>
+      <li>
+        <strong>Select the Orchestrator agent</strong>
+        <p class="small" style="color: var(--text-secondary);">From the chat panel agent picker in VS Code</p>
+      </li>
+      <li>
+        <strong style="color: var(--accent-orange);">⚠️ Switch to "Bypass Approvals"</strong>
+        <p class="small" style="color: var(--text-secondary);">Critical! Otherwise you'll be clicking approve for 15 minutes</p>
+      </li>
+    </ol>
+  </div>
+
+  <!-- ==================== SLIDE 10: THE PROMPT ==================== -->
+  <div class="slide" data-slide="9">
+    <h2>The <span class="gradient-text-2">Prompt</span></h2>
+    <p class="subtitle">One sentence. That's it. The agents handle the rest.</p>
+    <div class="prompt-box">
+      Implement a <span style="color: var(--accent-pink); font-weight: 700;">🌸 Spring-themed</span> version of the
+      Space Invader game from scratch.
+    </div>
+    <div class="card-grid cols-2" style="margin-top: 24px; max-width: 800px;">
+      <div class="card center">
+        <h3 style="font-size: 1.1rem;">🎨 Theme Ideas</h3>
+        <div class="pill-row" style="justify-content: center;">
+          <span class="pill">🎆 New Year's</span>
+          <span class="pill">💕 Valentine's</span>
+          <span class="pill">☘️ St. Patrick's</span>
+          <span class="pill">🐰 Easter</span>
+          <span class="pill">🌸 Spring</span>
+          <span class="pill">☀️ Summer</span>
+        </div>
+      </div>
+      <div class="card center">
+        <h3 style="font-size: 1.1rem;">🕹️ Why a Game?</h3>
+        <p class="small">It's fun, visual, relatable. Audience sees real-time results. Use any app you want — just practice it!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 11: WHAT TO WATCH ==================== -->
+  <div class="slide" data-slide="10">
+    <h2>What to <span class="gradient-text-3">Watch</span> During the Demo</h2>
+    <p class="subtitle">While the agents work (~10-15 min), show and explain these</p>
+    <div class="card-grid cols-2" style="max-width: 1000px;">
+      <div class="card">
+        <span class="icon-large">📄</span>
+        <h3>Agent Definitions</h3>
+        <p class="small">Show <code>.github/agents/</code> — explain how each Markdown file defines a role, model, and personality</p>
+      </div>
+      <div class="card">
+        <span class="icon-large">🐛</span>
+        <h3>Agent Debug Log</h3>
+        <p class="small">Open Output → Agent Debug Log to see real-time agent-to-agent communication and delegation</p>
+      </div>
+      <div class="card">
+        <span class="icon-large">🪟</span>
+        <h3>Context Window</h3>
+        <p class="small">Explain how each agent has its own context. The orchestrator manages the "big picture" while sub-agents focus on details</p>
+      </div>
+      <div class="card">
+        <span class="icon-large">⚡</span>
+        <h3>Parallel Execution</h3>
+        <p class="small">Point out when multiple agents run simultaneously — Coder + Designer working on different files at the same time</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 12: EXPERIMENT RESULTS ==================== -->
+  <div class="slide" data-slide="11">
+    <h2>Experiment <span class="gradient-text">Results</span></h2>
+    <p class="subtitle">Same prompt, three model configurations — Valentine's Space Invaders</p>
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Sonnet + Opus + Gemini Pro</th>
+          <th>Haiku + Opus Fast + Flash</th>
+          <th>Sonnet + Codex + Gemini Pro</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Feature Score</strong></td>
+          <td><span class="check">13.5 / 14</span></td>
+          <td><span class="warn">8.5 / 14</span></td>
+          <td>10.5 / 14</td>
+        </tr>
+        <tr>
+          <td>First-Run Correctness</td>
+          <td><span class="warn">⚠️ Needed fixes</span></td>
+          <td><span class="warn">⚠️ Needed fixes</span></td>
+          <td><span class="check">✅ Worked first try</span></td>
+        </tr>
+        <tr>
+          <td>Lines of Code</td>
+          <td>~6,282</td>
+          <td>~3,117</td>
+          <td>~2,423</td>
+        </tr>
+        <tr>
+          <td>Source Files</td>
+          <td>22</td>
+          <td>16</td>
+          <td>27</td>
+        </tr>
+        <tr>
+          <td>Shields & Bonus Ship</td>
+          <td><span class="check">✅ Yes</span></td>
+          <td><span class="cross">❌ Missing</span></td>
+          <td><span class="cross">❌ Missing</span></td>
+        </tr>
+        <tr>
+          <td>Sound / Audio</td>
+          <td><span class="check">✅ SFX</span></td>
+          <td><span class="warn">⚠️ Partial</span></td>
+          <td><span class="check">✅ Procedural SFX</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ==================== SLIDE 13: KEY TAKEAWAYS ==================== -->
+  <div class="slide" data-slide="12">
+    <h2>Key <span class="gradient-text-4">Takeaways</span></h2>
+    <div class="card-grid cols-2" style="max-width: 1000px; margin-top: 16px;">
+      <div class="card">
+        <span class="badge multi">Insight</span>
+        <h3>Model Selection Matters Most for Orchestrator & Coder</h3>
+        <p class="small">These roles had the largest impact on output quality. Planner and Designer showed less sensitivity to model tier.</p>
+      </div>
+      <div class="card">
+        <span class="badge multi">Insight</span>
+        <h3>Speed vs. Quality is a Real Tradeoff</h3>
+        <p class="small">"Fast" model variants reduce time but cost you features and correctness. Choose wisely per use case.</p>
+      </div>
+      <div class="card">
+        <span class="badge multi">Insight</span>
+        <h3>Multi-Model = Pick the Best Tool</h3>
+        <p class="small">Claude orchestrates well, Codex codes clean, Gemini designs beautifully. Each model has strengths — use them.</p>
+      </div>
+      <div class="card">
+        <span class="badge multi">Insight</span>
+        <h3>Agent Definitions are Simple & Portable</h3>
+        <p class="small">Just Markdown files in your repo. Version-controlled, shareable, customizable. No complex infrastructure needed.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 14: CLOSING ==================== -->
+  <div class="slide" data-slide="13">
+    <div class="hero-bg">
+      <div class="orb"></div>
+      <div class="orb"></div>
+      <div class="orb"></div>
+    </div>
+    <svg class="gh-logo" viewBox="0 0 98 96" fill="#fff"><path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg>
+    <h1>Let's <span class="gradient-text">Build</span> Something</h1>
+    <p class="subtitle" style="max-width: 600px; text-align: center;">Fork the repo. Define your agents. Let them cook. 🚀</p>
+    <div class="highlight-box" style="max-width: 600px; text-align: center; margin-top: 20px;">
+      <p class="small" style="color: var(--text-primary);">
+        <strong>github.com/yortch/agent-orchestration</strong>
+      </p>
+    </div>
+    <p class="tiny" style="margin-top: 24px;">Based on the <a href="https://gist.github.com/burkeholland/0e68481f96e94bbb98134fa6efd00436" target="_blank" style="color: var(--accent-blue); text-decoration: none;">ultralight orchestration pattern</a> by <a href="https://github.com/burkeholland" target="_blank" style="color: var(--accent-blue); text-decoration: none;">Burke Holland</a></p>
+    <p class="tiny" style="margin-top: 8px;">Powered by GitHub Copilot · Claude · GPT · Gemini</p>
+  </div>
+
+</div>
+
+<!-- Progress bar -->
+<div class="progress-bar"><div class="fill" id="progress"></div></div>
+<div class="slide-counter" id="counter">1 / 14</div>
+<div class="nav-hint"><kbd>←</kbd> <kbd>→</kbd> or click to navigate</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  function goTo(n) {
+    if (n < 0 || n >= total) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit-left');
+    setTimeout(() => slides[current === n ? current : (current)].classList.remove('exit-left'), 500);
+
+    const prev = current;
+    current = n;
+    slides[current].classList.add('active');
+
+    // cleanup
+    setTimeout(() => {
+      slides.forEach((s, i) => {
+        if (i !== current) { s.classList.remove('active', 'exit-left'); }
+      });
+    }, 550);
+
+    document.getElementById('progress').style.width = ((current / (total - 1)) * 100) + '%';
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); goTo(current - 1); }
+    if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+  });
+
+  // Click left/right halves
+  document.addEventListener('click', (e) => {
+    if (e.clientX > window.innerWidth / 2) goTo(current + 1);
+    else goTo(current - 1);
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) { dx < 0 ? goTo(current + 1) : goTo(current - 1); }
+  });
+</script>
+</body>
+</html>
