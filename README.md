@@ -143,6 +143,12 @@ To evaluate the orchestration system, the same prompt was given to the Orchestra
 4. **Speed vs quality tradeoff:** `space-invaders-fast-vscode` demonstrated that using "fast" model variants across agents reduces implementation time but at a significant cost to feature completeness and code correctness.
 5. **Model selection matters most for Orchestrator and Coder roles** — these had the largest impact on output quality. The Planner and Designer roles showed less sensitivity to model tier.
 
+## Play Valentine Invaders Locally
+
+1. Open `index.html` in a modern browser (no build step required), or serve the folder with `python3 -m http.server 4173`.
+2. Move with **A / D** or **← →**, shoot with **Space**, pause with **P**.
+3. Protect the heart shields, clear each wave, and chase the bonus bouquet ship for extra points.
+
 ## Contributing
 
 Feel free to customize the agent definitions in `.github/agents/` to match your team's needs and preferences.
