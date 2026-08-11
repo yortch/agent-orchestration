@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Space Invaders</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>💘 Valentine's Space Invaders 💘</h1>
+            <div class="stats">
+                <span>Score: <span id="score">0</span></span>
+                <span>Lives: <span id="lives">3</span></span>
+                <span>Level: <span id="level">1</span></span>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+        <div id="startScreen" class="screen">
+            <h2>💕 Valentine's Space Invaders 💕</h2>
+            <p>Defend Earth from the invasion of heartbroken cupids!</p>
+            <div class="controls">
+                <p><strong>Controls:</strong></p>
+                <p>← → Arrow Keys: Move</p>
+                <p>Spacebar: Shoot Hearts</p>
+                <p>P: Pause</p>
+            </div>
+            <button id="startButton" class="game-button">Start Game</button>
+        </div>
+
+        <div id="gameOverScreen" class="screen hidden">
+            <h2>Game Over</h2>
+            <p>Your final score: <span id="finalScore">0</span></p>
+            <button id="restartButton" class="game-button">Play Again</button>
+        </div>
+
+        <div id="pauseScreen" class="screen hidden">
+            <h2>⏸️ Paused</h2>
+            <p>Press P to resume</p>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
