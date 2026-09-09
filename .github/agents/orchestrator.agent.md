@@ -59,6 +59,10 @@ For each phase:
 ### Step 4: Verify and Report
 After all phases complete, verify the work hangs together and report results.
 
+Verify ONCE at the end, not after every phase. You have no execution tools, so verification means reading files — re-reading each subagent's output immediately after it lands duplicates the self-check the subagent already ran and adds a full round-trip per phase. Batch it instead:
+- Grep for `export` in every new/changed file, then grep for the matching `import { ... } from` in files that depend on them, to catch name mismatches in one pass (this is the most common cross-subagent break — see repo memory `workspace-facts.md`).
+- Only open full file contents if the export/import grep turns up a mismatch or something looks off.
+
 ## Parallelization Rules
 
 **RUN IN PARALLEL when:**
@@ -104,6 +108,9 @@ Designer B: "Design the sidebar" → Sidebar.tsx, SidebarItem.tsx
 If you find yourself assigning overlapping scope, that's a signal to make it sequential:
 - ❌ "Update the main layout" + "Add the navigation" (both might touch Layout.tsx)
 - ✅ Phase 1: "Update the main layout" → Phase 2: "Add navigation to the updated layout"
+
+### Consolidate Small Scopes Into Fewer Dispatches
+Each subagent call has real fixed overhead (spin-up, a fully-detailed WHAT-prompt, its own self-check) on top of the actual coding time. For a small total scope (roughly ≤5 files), prefer 2-3 coarser tasks over 4+ single-file tasks even if they could technically be parallelized — e.g. combine a data/engine module with its dependent logic module into one Coder task rather than one subagent per file. Reserve fine-grained one-file-per-subagent splitting for larger builds where the parallelism actually outweighs the per-call overhead.
 
 ## CRITICAL: Never tell agents HOW to do their work
 
