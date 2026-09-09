@@ -1,8 +1,8 @@
 ---
 name: Orchestrator
-description: Sonnet, Codex, Gemini
+description: Sonnet, GPT, Gemini
 model: Claude Sonnet 5 (copilot)
-tools: ['read/readFile', 'agent', 'vscode/memory']
+tools: [vscode/memory, read/readFile, agent, search]
 ---
 
 <!-- Note: Memory is experimental at the moment. You'll need to be in VS Code Insiders and toggle on memory in settings -->
