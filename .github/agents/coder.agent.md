@@ -1,7 +1,8 @@
 ---
 name: Coder
 description: Writes code following mandatory coding principles.
-model: GPT-5.6 Luna (copilot)
+model: GPT-6 Luna (copilot)
+reasoning-effort: high
 tools: ['vscode', 'execute', 'read', 'agent', 'context7/*', 'github/*', 'edit', 'search', 'web', 'vscode/memory', 'todo']
 ---
 

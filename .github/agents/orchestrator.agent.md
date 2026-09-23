@@ -1,7 +1,7 @@
 ---
 name: Orchestrator
 description: Sonnet, GPT, Gemini
-model: Claude Sonnet 5 (copilot)
+model: GPT-6 Sol (copilot)
 tools: [vscode/memory, read/readFile, agent, search]
 ---
 
