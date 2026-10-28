@@ -1,7 +1,7 @@
 ---
 name: Orchestrator
 description: Sonnet, GPT, Gemini
-model: GPT-6 Sol (copilot)
+model: GPT-6.1 Sol (copilot)
 tools: [vscode/memory, read/readFile, agent, search]
 ---
 
